@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
@@ -34,6 +35,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
         String task = intent.getStringExtra("task");
         String description = intent.getStringExtra("description");
+        int id = intent.getIntExtra("id", 0);
 
         String content = task + "\n" + description;
 
@@ -46,17 +48,12 @@ public class NotificationReceiver extends BroadcastReceiver {
                 "Launch Task Manager",
                 pIntent).build();
 
-        Intent intentreply = new Intent(context,
+        Intent intentReply = new Intent(context,
                 ReplyActivity.class);
-        tasksList = new ArrayList<Tasks>();
-        DBHelper dbh = new DBHelper(context);
-        tasksList.addAll(dbh.getAllTasks());
-        int id = tasksList.size()-1;
-        dbh.close();
-        intentreply.putExtra(id);
 
+        intentReply.putExtra("id",id);
         PendingIntent pendingIntentReply = PendingIntent.getActivity
-                (context, 0, intentreply,
+                (context, 0, intentReply,
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
         RemoteInput ri = new RemoteInput.Builder("status")

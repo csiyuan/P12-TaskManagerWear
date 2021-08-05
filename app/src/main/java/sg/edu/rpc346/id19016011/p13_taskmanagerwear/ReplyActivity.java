@@ -16,6 +16,8 @@ public class ReplyActivity extends AppCompatActivity {
 
         CharSequence reply = null;
         Intent intent = getIntent();
+        int replyId = intent.getIntExtra("id", 0);
+
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
         if (remoteInput != null){
             reply = remoteInput.getCharSequence("status");
@@ -25,6 +27,10 @@ public class ReplyActivity extends AppCompatActivity {
         if(reply != null){
             Toast.makeText(ReplyActivity.this, "You have indicated: " + reply,
                     Toast.LENGTH_SHORT).show();
+            DBHelper dbh = new DBHelper(ReplyActivity.this);
+            long inserted_id = dbh.deleteTask(replyId);
+            dbh.close();
+            finish();
         }
 
     }

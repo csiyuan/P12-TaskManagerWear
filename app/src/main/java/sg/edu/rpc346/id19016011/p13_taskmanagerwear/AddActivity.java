@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class AddActivity extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class AddActivity extends AppCompatActivity {
     Button btnAddTask, btnCancel;
     EditText etName, etDescription, etRemind;
     int reqCode = 12345;
+    ArrayList<Tasks> tasksList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,13 @@ public class AddActivity extends AppCompatActivity {
                 int dataSeconds = Integer.parseInt(etRemind.getText().toString());
                 DBHelper dbh = new DBHelper(AddActivity.this);
                 long inserted_id = dbh.addTask(dataName, dataDescription);
+                tasksList = new ArrayList<Tasks>();
+                tasksList.addAll(dbh.getAllTasks());
+                int indexId = tasksList.size()-1;
+                Tasks object = tasksList.get(indexId);
+                int id = object.getId();
                 dbh.close();
+
 
                 if (inserted_id != -1) {
                     Calendar cal = Calendar.getInstance();
@@ -57,6 +65,7 @@ public class AddActivity extends AppCompatActivity {
                     Intent i = new Intent(AddActivity.this, NotificationReceiver.class);
                     i.putExtra("task" ,dataName);
                     i.putExtra("description" ,dataDescription);
+                    i.putExtra("id",id);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(AddActivity.this, reqCode, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
                     AlarmManager am = (AlarmManager)getSystemService(Activity.ALARM_SERVICE);
